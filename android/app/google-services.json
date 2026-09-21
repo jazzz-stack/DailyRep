@@ -1,0 +1,134 @@
+{
+  "project_info": {
+    "project_number": "823806647339",
+    "firebase_url": "https://rnprectice.firebaseio.com",
+    "project_id": "rnprectice",
+    "storage_bucket": "rnprectice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823806647339:android:21fd2823d9aaa7aa2f9e6e",
+        "android_client_info": {
+          "package_name": "com.cvzone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "823806647339-hp9b0o18vt748vvnssfpupkk22av39vt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cvzone",
+            "certificate_hash": "8c6e3cea4ab0a7c732164d8d71ed3268a3842055"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChm36vnvOKgZ-frplbKLdj6gxu-FxkK8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823806647339:android:023b45983ada0e082f9e6e",
+        "android_client_info": {
+          "package_name": "com.dailyrep"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChm36vnvOKgZ-frplbKLdj6gxu-FxkK8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823806647339:android:948352d2a53f39bf2f9e6e",
+        "android_client_info": {
+          "package_name": "com.demoapp.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChm36vnvOKgZ-frplbKLdj6gxu-FxkK8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823806647339:android:5fd81ca191cb60a62f9e6e",
+        "android_client_info": {
+          "package_name": "com.login"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChm36vnvOKgZ-frplbKLdj6gxu-FxkK8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823806647339:android:c41751a2df3aed472f9e6e",
+        "android_client_info": {
+          "package_name": "com.torchapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChm36vnvOKgZ-frplbKLdj6gxu-FxkK8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:823806647339:android:c9b9824a34bc487e2f9e6e",
+        "android_client_info": {
+          "package_name": "com.zummabooking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChm36vnvOKgZ-frplbKLdj6gxu-FxkK8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
