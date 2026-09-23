@@ -1047,6 +1047,15 @@
   resolved "https://registry.npmjs.org/@eslint/js/-/js-8.57.1.tgz#de633db3ec2ef6a3c89e2f19038063e8a122e2c2"
   integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
 
+"@expo/plist@^0.8.1":
+  version "0.8.1"
+  resolved "https://registry.npmjs.org/@expo/plist/-/plist-0.8.1.tgz#8f024f23d7b9cf45cfff4a6f8871d1c107a8833c"
+  integrity sha512-3gTReGIUm0oRaMClsAJYxBnVPCl6fVpsl8HS+DTVxDhW4GyVyxg9E/Znm3BvcHtUJ51RJJI14pC1wvrNilCRHw==
+  dependencies:
+    "@xmldom/xmldom" "^0.8.8"
+    base64-js "^1.5.1"
+    xmlbuilder "^15.1.1"
+
 "@firebase/ai@2.14.0":
   version "2.14.0"
   resolved "https://registry.npmjs.org/@firebase/ai/-/ai-2.14.0.tgz#292789b4dfa817ac17c25fef36bc7b7ffd710c31"
@@ -1996,6 +2005,20 @@
   dependencies:
     firebase "12.17.1"
 
+"@react-native-firebase/auth@^26.4.0":
+  version "26.4.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/auth/-/auth-26.4.0.tgz#6164b61379891e6432fad7d53fa260e22ab74a2c"
+  integrity sha512-uNOI7UpR2jzrLQMRwRiIM/mgVkj18j0DQiP/jy8ZiryPJanYS1qmIOk3q2glFvJ8mlYfLCGZgBkIOpV9hwFLWQ==
+  dependencies:
+    "@expo/plist" "^0.8.1"
+
+"@react-native-firebase/firestore@^26.4.0":
+  version "26.4.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-26.4.0.tgz#89d7b2c3842eb0547aea91c5e069d4e180161d87"
+  integrity sha512-OdHSSk1iH/HcWPAr/THunf4FvQqiN9uVh4cyY2KJSYrPXKFT20Ia9Ls92wo/NXY3K5R45p4K3TGjfFiwZGDSRQ==
+  dependencies:
+    react-native-url-polyfill "4.0.0"
+
 "@react-native-firebase/in-app-messaging@^26.4.0":
   version "26.4.0"
   resolved "https://registry.npmjs.org/@react-native-firebase/in-app-messaging/-/in-app-messaging-26.4.0.tgz#48ea4ac20cafd9837ea19eef0df2b07934b17e60"
@@ -2206,6 +2229,15 @@
   dependencies:
     invariant "^2.2.4"
     nullthrows "^1.1.1"
+
+"@react-navigation/bottom-tabs@^7.19.2":
+  version "7.19.2"
+  resolved "https://registry.npmjs.org/@react-navigation/bottom-tabs/-/bottom-tabs-7.19.2.tgz#cd6266e56fc77349ec607e6242f98bbb59f8fc96"
+  integrity sha512-sXUS7cySIj2cLwD1trdTnbqAm3TWYiF6L9i0VNES2+4ssUyBDgkIdmm7uxjhJ8ZSjzpWj8uSfLHkkSx0j0MpmA==
+  dependencies:
+    "@react-navigation/elements" "^2.9.43"
+    color "^4.2.3"
+    sf-symbols-typescript "^2.1.0"
 
 "@react-navigation/core@^7.22.1":
   version "7.22.1"
@@ -2504,6 +2536,11 @@
   version "9.3.2"
   resolved "https://registry.npmjs.org/@vscode/sudo-prompt/-/sudo-prompt-9.3.2.tgz#692ba38df40bd3502ccc4e9f099fbbaedbd5f04e"
   integrity sha512-gcXoCN00METUNFeQOFJ+C9xUI0DKB+0EGMVg7wbVYRHBw2Eq3fKisDZOkRdOz3kqXRKOENMfShPOmypw1/8nOw==
+
+"@xmldom/xmldom@^0.8.8":
+  version "0.8.15"
+  resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.8.15.tgz#71ebf80729e4e95221d519ac9b1e1eaea7784907"
+  integrity sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==
 
 accepts@^2.0.0:
   version "2.0.0"
@@ -6049,6 +6086,11 @@ react-native-screens@^4.28.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-url-polyfill@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/react-native-url-polyfill/-/react-native-url-polyfill-4.0.0.tgz#a8d204654bd341eba304091ae350b89866878bd7"
+  integrity sha512-eqYM3wBAA0eL1sPYbBAoNfbES3+NkgcxUdelQ7QzmoVtqKB5qGG0U13MPTRUroAWK+y2EoJFS3MZUK0fwTf0pA==
+
 react-native@0.87.1:
   version "0.87.1"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.87.1.tgz#493036a52fb741e0462aee8911653d998e8bc8db"
@@ -7109,6 +7151,11 @@ xml-naming@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/xml-naming/-/xml-naming-0.3.0.tgz#46c1e18bfe2858479982dd2accf34d16e749eda2"
   integrity sha512-ghig2TBE/H11aOVgmahA3MhimvkBr6JIYknH/Dhdk10nXwdbIqBJsbfMxpvFPG8bAw77gN29aQWvKpmVoPlvPQ==
+
+xmlbuilder@^15.1.1:
+  version "15.1.1"
+  resolved "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-15.1.1.tgz#9dcdce49eea66d8d10b42cae94a79c3c8d0c2ec5"
+  integrity sha512-yMqGBqtXyeN1e3TGYvgNgDVZ3j84W4cwkOXQswghol6APgZWaff9lnbvN7MHYJOiXsvGPXtjTYJEiC9J2wv9Eg==
 
 y18n@^4.0.0:
   version "4.0.3"
