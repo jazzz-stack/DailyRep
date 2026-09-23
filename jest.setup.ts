@@ -50,6 +50,29 @@ jest.mock('@react-native-firebase/firestore', () => ({
   updateDoc: jest.fn(async () => undefined),
 }));
 
+jest.mock('lucide-react-native', () => {
+  const React = require('react');
+  const {View} = require('react-native');
+  const Icon = () => React.createElement(View);
+
+  return {
+    Accessibility: Icon,
+    Activity: Icon,
+    Bike: Icon,
+    BicepsFlexed: Icon,
+    Cable: Icon,
+    Dumbbell: Icon,
+    Footprints: Icon,
+    Goal: Icon,
+    HeartPulse: Icon,
+    Landmark: Icon,
+    MoveUp: Icon,
+    PersonStanding: Icon,
+    StretchHorizontal: Icon,
+    Trophy: Icon,
+  };
+});
+
 jest.mock('@react-navigation/native', () => ({
   NavigationContainer: ({children}: {children: React.ReactNode}) => children,
 }));

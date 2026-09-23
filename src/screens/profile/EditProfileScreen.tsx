@@ -62,7 +62,7 @@ const durations = [
 ] as const;
 const frequencies = [2, 3, 4, 5, 6, 7] as const;
 
-export function EditProfileScreen({ navigation }: Props) {
+export function EditProfileScreen({navigation, route}: Props) {
   const { profile, user, refreshProfile } = useAuth();
   const [values, setValues] = useState<ProfileFormValues>({
     name: profile?.name ?? user?.displayName ?? '',
@@ -114,7 +114,13 @@ export function EditProfileScreen({ navigation }: Props) {
       }
       await refreshProfile();
       setSuccess('Profile saved successfully.');
-      setTimeout(() => navigation.goBack(), 600);
+      setTimeout(() => {
+        if (route.name === 'ProfileSetup') {
+          navigation.replace('Tabs', undefined);
+        } else {
+          navigation.goBack();
+        }
+      }, 600);
     } catch (saveError) {
       setError(
         getProfileErrorMessage(

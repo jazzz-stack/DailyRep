@@ -8,6 +8,7 @@ export type AuthUser = User;
 export type AuthContextValue = {
   user: AuthUser | null;
   profile: UserProfile | null;
+  profileError: string | null;
   phoneConfirmation: ConfirmationResult | null;
   isAuthenticated: boolean;
   isInitializing: boolean;

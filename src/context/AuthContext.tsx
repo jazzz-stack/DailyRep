@@ -16,17 +16,41 @@ import {
   signIn,
   signOut,
 } from '../services/authService';
-import {createUserProfile, getUserProfile} from '../services/profileService';
+import {createUserProfile, getProfileErrorMessage, getUserProfile} from '../services/profileService';
 import type {AuthContextValue, AuthUser, ConfirmationResult} from '../types/auth';
-import type {UserProfileInput} from '../types/profile';
+import type {UserProfile, UserProfileInput} from '../types/profile';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+// A cold-start Firestore read can fail transiently, so retry before treating it as "no profile".
+async function loadProfileWithRetries(
+  uid: string,
+  attempts = 3,
+  delayMs = 400,
+): Promise<{profile: UserProfile | null; error: string | null}> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const profile = await getUserProfile(uid);
+      return {profile, error: null};
+    } catch (fetchError) {
+      lastError = fetchError;
+      if (attempt < attempts) {
+        await new Promise(resolve => setTimeout(() => resolve(undefined), delayMs * attempt));
+      }
+    }
+  }
+
+  return {profile: null, error: getProfileErrorMessage(lastError, 'Unable to load your profile right now.')};
+}
 
 export function AuthProvider({children}: PropsWithChildren) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [profile, setProfile] = useState<Awaited<ReturnType<typeof getUserProfile>>>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
   const [phoneConfirmation, setPhoneConfirmation] = useState<ConfirmationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,13 +62,16 @@ export function AuthProvider({children}: PropsWithChildren) {
       setIsAuthenticated(Boolean(nextUser));
       if (!nextUser) {
         setProfile(null);
+        setProfileError(null);
         setIsInitializing(false);
         return;
       }
 
-      getUserProfile(nextUser.uid)
-        .then(nextProfile => setProfile(nextProfile))
-        .catch(() => setProfile(null))
+      loadProfileWithRetries(nextUser.uid)
+        .then(({profile: nextProfile, error: loadError}) => {
+          setProfile(nextProfile);
+          setProfileError(loadError);
+        })
         .finally(() => setIsInitializing(false));
     });
   }, []);
@@ -52,16 +79,24 @@ export function AuthProvider({children}: PropsWithChildren) {
   const refreshProfile = useCallback(async () => {
     if (!user) {
       setProfile(null);
+      setProfileError(null);
       return;
     }
 
-    setProfile(await getUserProfile(user.uid));
+    const {profile: nextProfile, error: loadError} = await loadProfileWithRetries(user.uid);
+    setProfile(nextProfile);
+    setProfileError(loadError);
+
+    if (loadError && !nextProfile) {
+      throw new Error(loadError);
+    }
   }, [user]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
       profile,
+      profileError,
       phoneConfirmation,
       isAuthenticated,
       isInitializing,
@@ -107,6 +142,7 @@ export function AuthProvider({children}: PropsWithChildren) {
           };
           await createUserProfile(credential.user.uid, profileInput);
           setProfile(await getUserProfile(credential.user.uid));
+          setProfileError(null);
         } catch (authError) {
           setError(getAuthErrorMessage(authError, 'Unable to create your account right now.'));
         }
@@ -119,7 +155,7 @@ export function AuthProvider({children}: PropsWithChildren) {
         }
       },
     }),
-    [error, isAuthenticated, isInitializing, phoneConfirmation, profile, refreshProfile, user],
+    [error, isAuthenticated, isInitializing, phoneConfirmation, profile, profileError, refreshProfile, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

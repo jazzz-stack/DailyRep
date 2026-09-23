@@ -2,7 +2,7 @@ import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useAuth} from '../../context/AuthContext';
 
 export function HomeScreen() {
-  const {profile, signOut, user} = useAuth();
+  const {profile, user} = useAuth();
   const displayName = profile?.name || user?.displayName;
 
   return (
@@ -20,7 +20,6 @@ export function HomeScreen() {
         <View style={styles.stat}><Text style={styles.statValue}>7</Text><Text style={styles.statLabel}>DAY STREAK</Text></View>
         <View style={styles.stat}><Text style={styles.statValue}>4 / 5</Text><Text style={styles.statLabel}>THIS WEEK</Text></View>
       </View>
-      <Pressable onPress={signOut} style={styles.signOut}><Text style={styles.signOutText}>Sign out</Text></Pressable>
     </View>
   );
 }
@@ -40,6 +39,4 @@ const styles = StyleSheet.create({
   stat: {backgroundColor: '#FFFFFF', borderRadius: 14, flex: 1, padding: 18},
   statValue: {color: '#10211B', fontSize: 25, fontWeight: '800'},
   statLabel: {color: '#607069', fontSize: 11, fontWeight: '800', marginTop: 5},
-  signOut: {alignSelf: 'center', marginTop: 'auto', padding: 12},
-  signOutText: {color: '#37734F', fontWeight: '700'},
 });

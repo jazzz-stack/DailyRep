@@ -10,6 +10,7 @@ import {
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from '../../types/navigation';
 import { useAuth } from '../../context/AuthContext';
+import { LogoutConfirmationModal } from '../../components/LogoutConfirmationModal';
 import { getAuthErrorMessage } from '../../services/authService';
 
 type Props = BottomTabScreenProps<MainTabParamList, 'Profile'>;
@@ -43,6 +44,11 @@ export function ProfileScreen({ navigation }: Props) {
   const { profile, refreshProfile, signOut, user } = useAuth();
   const [isLoading, setIsLoading] = useState(!profile);
   const [error, setError] = useState<string | null>(null);
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+
+  function confirmLogout() {
+    setIsLogoutModalVisible(true);
+  }
 
   useEffect(() => {
     let active = true;
@@ -154,9 +160,17 @@ export function ProfileScreen({ navigation }: Props) {
           {profile ? 'Edit profile' : 'Set up profile'}
         </Text>
       </Pressable>
-      <Pressable onPress={signOut} style={styles.logout}>
+      <Pressable onPress={confirmLogout} style={styles.logout}>
         <Text style={styles.logoutText}>Log out</Text>
       </Pressable>
+      <LogoutConfirmationModal
+        onCancel={() => setIsLogoutModalVisible(false)}
+        onConfirm={() => {
+          setIsLogoutModalVisible(false);
+          return signOut();
+        }}
+        visible={isLogoutModalVisible}
+      />
     </ScrollView>
   );
 }

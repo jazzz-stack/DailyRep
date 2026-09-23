@@ -13,8 +13,18 @@ export type MainTabParamList = {
   Profile: undefined;
 };
 
+export type ExerciseStackParamList = {
+  WorkoutPlans: undefined;
+  WorkoutPlanDetails: {planId: string};
+  WorkoutDetails: {planId: string; workoutId: string};
+  ExerciseDetails: {exerciseId: string};
+  ExerciseLibrary: undefined;
+};
+
+export type WorkoutStackParamList = ExerciseStackParamList;
+
 export type MainStackParamList = {
-  Tabs: NavigatorScreenParams<MainTabParamList>;
+  Tabs: NavigatorScreenParams<MainTabParamList> | undefined;
   EditProfile: undefined;
   ProfileSetup: undefined;
 };
@@ -22,5 +32,4 @@ export type MainStackParamList = {
 export type RootStackParamList = {
   Auth: NavigatorScreenParams<AuthStackParamList>;
   Main: NavigatorScreenParams<MainStackParamList>;
-  ProfileSetup: undefined;
 };
