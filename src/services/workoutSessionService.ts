@@ -5,7 +5,6 @@ import {
   getDocs,
   getFirestore,
   query,
-  orderBy,
   serverTimestamp,
   setDoc,
   where,
@@ -92,10 +91,15 @@ export async function getCompletedWorkoutSessions(uid: string): Promise<WorkoutS
     const q = query(
       workoutSessionsCollection(uid),
       where('status', '==', 'completed'),
-      orderBy('completedAt', 'desc'),
     );
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => doc.data() as WorkoutSession);
+    const sessions = snapshot.docs.map(doc => doc.data() as WorkoutSession);
+    // Sort by completedAt in descending order
+    return sessions.sort((a, b) => {
+      const dateA = new Date(a.completedAt || 0).getTime();
+      const dateB = new Date(b.completedAt || 0).getTime();
+      return dateB - dateA;
+    });
   } catch (error) {
     console.error('Failed to fetch completed workout sessions:', error);
     return [];

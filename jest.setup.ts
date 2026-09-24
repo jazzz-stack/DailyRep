@@ -15,9 +15,17 @@ jest.mock('@notifee/react-native', () => ({
   default: {
     createChannel: jest.fn(async () => 'default'),
     displayNotification: jest.fn(async () => undefined),
+    createTriggerNotification: jest.fn(async () => undefined),
+    cancelNotification: jest.fn(async () => undefined),
+    onForegroundEvent: jest.fn(() => jest.fn()),
+    getInitialNotification: jest.fn(async () => null),
+    requestPermission: jest.fn(async () => 1),
   },
-  AndroidImportance: {HIGH: 4},
+  AndroidImportance: {HIGH: 4, DEFAULT: 3, LOW: 2, MIN: 1, NONE: 0},
   AndroidStyle: {BIGPICTURE: 1},
+  TriggerType: {TIMESTAMP: 0},
+  RepeatFrequency: {WEEKLY: 604800000},
+  EventType: {PRESS: 1, ACTION_PRESS: 2, DISMISSED: 3},
 }));
 
 jest.mock('@react-native-firebase/app', () => ({getApp: jest.fn(() => ({}))}));

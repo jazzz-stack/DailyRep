@@ -1,8 +1,8 @@
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, type NavigationContainerRef} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
-import {useState, type ReactNode} from 'react';
+import {useRef, useState, type ReactNode} from 'react';
 import {LoadingScreen} from '../components/LoadingScreen';
 import {useAuth} from '../context/AuthContext';
 import {ForgotPasswordScreen} from '../screens/auth/ForgotPasswordScreen';
@@ -21,9 +21,17 @@ import {WorkoutHistoryDetailScreen} from '../screens/workouts/WorkoutHistoryDeta
 import {ProfileScreen} from '../screens/profile/ProfileScreen';
 import {EditProfileScreen} from '../screens/profile/EditProfileScreen';
 import {ProfileSetupScreen} from '../screens/profile/ProfileSetupScreen';
+import {NotificationSettingsScreen} from '../screens/profile/NotificationSettingsScreen';
 import {ProgressScreen} from '../screens/progress/ProgressScreen';
 import {ExerciseProgressScreen} from '../screens/progress/ExerciseProgressScreen';
 import type {AuthStackParamList, ExerciseStackParamList, MainStackParamList, MainTabParamList, RootStackParamList} from '../types/navigation';
+
+// Global navigation ref for notification handling
+export const navigationRef = {ref: null as unknown as NavigationContainerRef<RootStackParamList>};
+
+export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList>) {
+  navigationRef.ref = ref;
+}
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -109,6 +117,17 @@ function MainStackNavigator() {
           headerShadowVisible: false,
         }}
       />
+      <MainStack.Screen
+        name="NotificationSettings"
+        component={NotificationSettingsScreen}
+        options={{
+          headerShown: true,
+          title: 'Notification Settings',
+          headerTintColor: '#163B2A',
+          headerStyle: {backgroundColor: '#F4F7F1'},
+          headerShadowVisible: false,
+        }}
+      />
       <MainStack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
     </MainStack.Navigator>
   );
@@ -119,7 +138,9 @@ export function AppNavigator() {
   const hasProfileLoadError = isAuthenticated && Boolean(profileError) && !profile;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={setNavigationRef}
+    >
       {isInitializing ? (
         <LoadingScreen message="Checking your account..." />
       ) : hasProfileLoadError ? (

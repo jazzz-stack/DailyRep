@@ -32,6 +32,7 @@ export type MainStackParamList = {
   Tabs: NavigatorScreenParams<MainTabParamList> | undefined;
   EditProfile: undefined;
   ProfileSetup: undefined;
+  NotificationSettings: undefined;
 };
 
 export type RootStackParamList = {

@@ -160,6 +160,12 @@ export function ProfileScreen({ navigation }: Props) {
           {profile ? 'Edit profile' : 'Set up profile'}
         </Text>
       </Pressable>
+      <Pressable
+        onPress={() => navigation.getParent()?.navigate('NotificationSettings')}
+        style={styles.secondaryButton}
+      >
+        <Text style={styles.secondaryText}>Notification Settings</Text>
+      </Pressable>
       <Pressable onPress={confirmLogout} style={styles.logout}>
         <Text style={styles.logoutText}>Log out</Text>
       </Pressable>
@@ -236,6 +242,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   primaryText: { color: '#10211B', fontSize: 16, fontWeight: '800' },
+  secondaryButton: {
+    alignItems: 'center',
+    backgroundColor: '#E0E8E3',
+    borderRadius: 12,
+    justifyContent: 'center',
+    minHeight: 54,
+    marginTop: 8,
+  },
+  secondaryText: { color: '#10211B', fontSize: 16, fontWeight: '700' },
   logout: { alignItems: 'center', padding: 14 },
   logoutText: { color: '#37734F', fontWeight: '700' },
 });

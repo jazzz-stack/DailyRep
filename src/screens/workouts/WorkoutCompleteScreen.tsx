@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, Pressable, ScrollView, Modal, ActivityIndicator} from 'react-native';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import notifee from '@notifee/react-native';
 import {useAuth} from '../../context/AuthContext';
 import {saveCompletedWorkoutSession, getWorkoutSessionErrorMessage} from '../../services/workoutSessionService';
 import {workoutPlans} from '../../data/workoutPlans';
@@ -8,6 +9,7 @@ import {exercises} from '../../data/exercises';
 import {formatDuration} from '../../utils/workoutSessionUtils';
 import type {WorkoutStackParamList} from '../../types/navigation';
 import type {WorkoutSession} from '../../types/workoutSession';
+import type {WorkoutCompletionData} from '../../types/notificationPreferences';
 
 type Props = NativeStackScreenProps<WorkoutStackParamList, 'WorkoutComplete'>;
 
@@ -71,6 +73,37 @@ export function WorkoutCompleteScreen({navigation, route}: Props) {
       setSaveError(null);
       await saveCompletedWorkoutSession(user.uid, workoutSession);
       setIsSaving(false);
+
+      // Show completion notification
+      try {
+        const plan = workoutPlans.find(p => p.id === workoutSession.planId);
+        const workout = plan ? plan.workouts.find(w => w.id === workoutSession.workoutId) : null;
+
+        const notificationData: WorkoutCompletionData = {
+          type: 'workout_completed',
+          sessionId: workoutSession.id,
+        };
+
+        const title = workout ? `${workout.name} Complete 🎉` : 'Workout Complete 🎉';
+        const body = workout
+          ? `Great job! You completed today's ${workout.name}.`
+          : 'Great job! You completed today\'s workout.';
+
+        await notifee.displayNotification({
+          title,
+          body,
+          android: {
+            channelId: 'default',
+            pressAction: {
+              id: 'default',
+            },
+          },
+          data: notificationData,
+        });
+      } catch (notificationError) {
+        // Notification failure should not crash the app
+        console.error('Failed to display completion notification:', notificationError);
+      }
     } catch (error) {
       const errorMessage = getWorkoutSessionErrorMessage(error, 'Failed to save your workout.');
       setSaveError(errorMessage);

@@ -17,6 +17,8 @@ import {
   signOut,
 } from '../services/authService';
 import {createUserProfile, getProfileErrorMessage, getUserProfile} from '../services/profileService';
+import {getNotificationPreferences} from '../services/notificationPreferencesService';
+import {rescheduleWorkoutReminders} from '../services/workoutReminderService';
 import type {AuthContextValue, AuthUser, ConfirmationResult} from '../types/auth';
 import type {UserProfile, UserProfileInput} from '../types/profile';
 
@@ -75,6 +77,26 @@ export function AuthProvider({children}: PropsWithChildren) {
         .finally(() => setIsInitializing(false));
     });
   }, []);
+
+  // Synchronize notification reminders on app startup
+  useEffect(() => {
+    if (!user || !profile || isInitializing) {
+      return;
+    }
+
+    const syncReminders = async () => {
+      try {
+        const preferences = await getNotificationPreferences(user.uid);
+        await rescheduleWorkoutReminders(preferences, profile);
+        console.log('Notification reminders synchronized on app startup');
+      } catch (error) {
+        console.error('Failed to synchronize notification reminders:', error);
+        // Don't propagate error - app should continue functioning
+      }
+    };
+
+    syncReminders();
+  }, [user, profile, isInitializing]);
 
   const refreshProfile = useCallback(async () => {
     if (!user) {
