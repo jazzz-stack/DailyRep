@@ -5,7 +5,7 @@ import {useAuth} from '../../context/AuthContext';
 import {useWorkoutSession} from '../../hooks/useWorkoutSession';
 import {exercises} from '../../data/exercises';
 import {workoutPlans} from '../../data/workoutPlans';
-import {saveCompletedWorkoutSession, getWorkoutSessionErrorMessage} from '../../services/workoutSessionService';
+import {saveCompletedWorkoutSession, getWorkoutSessionErrorMessage, getInProgressWorkoutSession} from '../../services/workoutSessionService';
 import {validateReps, validateWeight, formatRest, formatDuration} from '../../utils/workoutSessionUtils';
 import type {WorkoutStackParamList} from '../../types/navigation';
 
@@ -26,9 +26,30 @@ export function WorkoutExecutionScreen({navigation, route}: Props) {
   // Initialize workout session
   useEffect(() => {
     if (!state.session && workout && user) {
-      actions.initializeSession(workout, user.uid, route.params.planId, route.params.workoutId);
+      // Check if there's an in-progress workout for this plan/workout
+      const checkAndLoadSavedWorkout = async () => {
+        try {
+          const savedSession = await getInProgressWorkoutSession(user.uid);
+          
+          if (savedSession && savedSession.planId === route.params.planId && savedSession.workoutId === route.params.workoutId) {
+            // Resume the saved workout
+            console.log('[WorkoutExecution] Found saved workout, resuming:', savedSession.id);
+            actions.resumeSession(savedSession, user.uid);
+          } else {
+            // Start a new workout
+            console.log('[WorkoutExecution] No saved workout found, creating new');
+            actions.initializeSession(workout, user.uid, route.params.planId, route.params.workoutId);
+          }
+        } catch (error) {
+          console.error('[WorkoutExecution] Error checking for saved workout:', error);
+          // Fallback to new session
+          actions.initializeSession(workout, user.uid, route.params.planId, route.params.workoutId);
+        }
+      };
+
+      checkAndLoadSavedWorkout();
     }
-  }, []);
+  }, [user?.uid, workout, state.session, actions, route.params]);
 
   // Handle completion
   useEffect(() => {

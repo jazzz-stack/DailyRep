@@ -105,8 +105,17 @@ function MainStackNavigator() {
 
   // Navigate to Tabs when profile becomes available
   useEffect(() => {
-    if (profile && navigationRef.ref) {
-      navigationRef.ref.navigate('Main' as any, {screen: 'Tabs'} as any);
+    if (profile && navigationRef.ref?.navigate) {
+      // Use a small delay to ensure NavigationContainer is fully initialized
+      const timer = setTimeout(() => {
+        try {
+          navigationRef.ref.navigate('Main' as any, {screen: 'Tabs'} as any);
+        } catch (error) {
+          // Silently handle navigation errors during initialization
+          console.debug('Navigation not ready yet, will retry');
+        }
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [profile]);
 
@@ -149,9 +158,15 @@ export function AppNavigator() {
   const {isAuthenticated, isInitializing, profile, profileError, refreshProfile} = useAuth();
   const hasProfileLoadError = isAuthenticated && Boolean(profileError) && !profile;
 
+  const handleNavigationReady = () => {
+    // Navigation is now ready for use
+    console.debug('[Navigation] NavigationContainer ready');
+  };
+
   return (
     <NavigationContainer
       ref={setNavigationRef}
+      onReady={handleNavigationReady}
     >
       {isInitializing ? (
         <LoadingScreen message="Checking your account..." />

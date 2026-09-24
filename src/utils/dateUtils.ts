@@ -118,6 +118,13 @@ export function formatWeekLabel(weekStart: Date): string {
 /**
  * Get the last N weeks of data (for historical progress view)
  */
+export function formatHomeDate(date: Date | string): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const dayName = d.toLocaleDateString('en-US', {weekday: 'long'}).toUpperCase();
+  const monthName = d.toLocaleDateString('en-US', {month: 'long'}).toUpperCase();
+  const day = d.getDate();
+  return `${dayName}, ${monthName} ${day}`;
+}
 export function getLastNWeeks(n: number): Array<{start: Date; end: Date; label: string}> {
   const weeks: Array<{start: Date; end: Date; label: string}> = [];
 

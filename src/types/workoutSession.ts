@@ -22,6 +22,7 @@ export interface WorkoutSession {
   workoutId: string;
   startedAt: string;
   completedAt?: string;
+  updatedAt?: string;
   status: WorkoutSessionStatus;
   exercises: WorkoutSessionExercise[];
   durationSeconds?: number;

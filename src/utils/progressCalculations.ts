@@ -239,3 +239,52 @@ export function getExercisesFromSessions(sessions: WorkoutSession[]): string[] {
 
   return Array.from(exerciseSet);
 }
+
+/**
+ * Calculate consecutive workout days streak
+ * A "day" in the streak is a calendar date with at least one completed workout.
+ * Returns 0 if no workouts or last workout was more than 1 day ago.
+ */
+export function calculateWorkoutStreak(sessions: WorkoutSession[]): number {
+  if (sessions.length === 0) return 0;
+
+  // Get unique dates with completed workouts, sorted by date descending (newest first)
+  const datesWithWorkouts = new Set<number>();
+  for (const session of sessions) {
+    if (session.completedAt) {
+      const date = new Date(session.completedAt);
+      const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      datesWithWorkouts.add(dateOnly.getTime());
+    }
+  }
+
+  if (datesWithWorkouts.size === 0) return 0;
+
+  // Sort dates descending (newest first)
+  const sortedDates = Array.from(datesWithWorkouts).sort((a, b) => b - a);
+
+  // Check if latest workout is today or yesterday
+  const today = new Date();
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const latestDate = new Date(sortedDates[0]);
+
+  // If latest workout is more than 1 day ago, streak is broken
+  const daysSinceLatest = Math.floor((todayOnly.getTime() - latestDate.getTime()) / (1000 * 60 * 60 * 24));
+  if (daysSinceLatest > 1) return 0;
+
+  // Count consecutive days from latest date
+  let streak = 1;
+  for (let i = 1; i < sortedDates.length; i++) {
+    const currentDate = new Date(sortedDates[i - 1]);
+    const previousDate = new Date(sortedDates[i]);
+    const daysDiff = Math.floor((currentDate.getTime() - previousDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysDiff === 1) {
+      streak++;
+    } else {
+      break; // Streak broken
+    }
+  }
+
+  return streak;
+}

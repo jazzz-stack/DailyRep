@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import type {Workout, WorkoutExercise} from '../types/workout';
 import type {CompletedSet, WorkoutSession, WorkoutSessionExercise, WorkoutSessionStatus} from '../types/workoutSession';
+import {saveWorkoutSessionProgress} from '../services/workoutSessionService';
 
 function generateUUID(): string {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -22,10 +23,12 @@ export interface WorkoutSessionState {
   workoutStartTime: number | null;
   workoutPauseTime: number | null;
   totalElapsedPausedTime: number;
+  userId: string | null;
 }
 
 export interface WorkoutSessionActions {
   initializeSession: (workout: Workout, userId: string, planId: string, workoutId: string) => void;
+  resumeSession: (session: WorkoutSession, userId: string) => void;
   startRest: () => void;
   skipRest: () => void;
   completeSet: (reps: number, weight: number) => void;
@@ -48,6 +51,7 @@ export function useWorkoutSession(): {state: WorkoutSessionState; actions: Worko
   const [workoutStartTime, setWorkoutStartTime] = useState<number | null>(null);
   const [workoutPauseTime, setWorkoutPauseTime] = useState<number | null>(null);
   const [totalElapsedPausedTime, setTotalElapsedPausedTime] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const restTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -112,6 +116,7 @@ export function useWorkoutSession(): {state: WorkoutSessionState; actions: Worko
         })),
       };
       setSession(newSession);
+      setUserId(userId);
       setCurrentExerciseIndex(0);
       setCurrentSetNumber(1);
       setCurrentReps('');
@@ -126,9 +131,50 @@ export function useWorkoutSession(): {state: WorkoutSessionState; actions: Worko
     [],
   );
 
+  const resumeSession = useCallback(
+    (savedSession: WorkoutSession, userId: string) => {
+      console.log('[WorkoutSession] Resuming saved workout:', savedSession.id);
+      
+      // Find current exercise index by counting total completed sets
+      let totalCompletedSets = 0;
+      let currentExerciseIdx = 0;
+      
+      for (let i = 0; i < savedSession.exercises.length; i++) {
+        const exercise = savedSession.exercises[i];
+        if (exercise.completedSets.length < exercise.targetSets) {
+          // Found the exercise being worked on
+          currentExerciseIdx = i;
+          totalCompletedSets += exercise.completedSets.length;
+          break;
+        }
+        totalCompletedSets += exercise.completedSets.length;
+      }
+
+      // Get the current exercise being worked on
+      const currentExercise = savedSession.exercises[currentExerciseIdx];
+      const nextSetNumber = (currentExercise?.completedSets.length || 0) + 1;
+
+      setSession(savedSession);
+      setUserId(userId);
+      setCurrentExerciseIndex(currentExerciseIdx);
+      setCurrentSetNumber(nextSetNumber);
+      setCurrentReps('');
+      setCurrentWeight('');
+      setRestTimeRemaining(0);
+      setIsRestActive(false);
+      setStatus('in_progress');
+      setWorkoutStartTime(null); // Don't track new time for resumed sessions
+      setWorkoutPauseTime(null);
+      setTotalElapsedPausedTime(0);
+      
+      console.log('[WorkoutSession] Resumed at exercise', currentExerciseIdx, 'set', nextSetNumber);
+    },
+    [],
+  );
+
   const completeSet = useCallback(
-    (reps: number, weight: number) => {
-      if (!session) return;
+    async (reps: number, weight: number) => {
+      if (!session || !userId) return;
 
       const updatedSession = {...session};
       const currentExercise = updatedSession.exercises[currentExerciseIndex];
@@ -146,6 +192,14 @@ export function useWorkoutSession(): {state: WorkoutSessionState; actions: Worko
       setSession(updatedSession);
       setCurrentReps('');
       setCurrentWeight('');
+
+      // Save progress to Firebase after each set
+      try {
+        await saveWorkoutSessionProgress(userId, updatedSession);
+        console.log('[WorkoutSession] Set progress saved to Firebase');
+      } catch (error) {
+        console.error('[WorkoutSession] Failed to save set progress:', error);
+      }
 
       // Check if exercise is complete
       if (currentExercise.completedSets.length < currentExercise.targetSets) {
@@ -174,7 +228,7 @@ export function useWorkoutSession(): {state: WorkoutSessionState; actions: Worko
         }
       }
     },
-    [session, currentExerciseIndex, currentSetNumber, workoutStartTime, totalElapsedPausedTime, clearTimers],
+    [session, userId, currentExerciseIndex, currentSetNumber, workoutStartTime, totalElapsedPausedTime, clearTimers],
   );
 
   const startRest = useCallback(() => {
@@ -235,9 +289,11 @@ export function useWorkoutSession(): {state: WorkoutSessionState; actions: Worko
       workoutStartTime,
       workoutPauseTime,
       totalElapsedPausedTime,
+      userId,
     },
     actions: {
       initializeSession,
+      resumeSession,
       startRest,
       skipRest,
       completeSet,

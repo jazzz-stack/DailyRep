@@ -21,18 +21,25 @@ function workoutSessionReference(uid: string, sessionId: string) {
 
 export async function saveCompletedWorkoutSession(uid: string, session: WorkoutSession): Promise<void> {
   const sessionRef = workoutSessionReference(uid, session.id);
-  await setDoc(sessionRef, {
-    ...session,
-    completedAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  console.log('[WorkoutSession] Saving completed workout:', session.id, 'for user:', uid);
+  try {
+    await setDoc(sessionRef, {
+      ...session,
+      completedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    console.log('[WorkoutSession] Successfully saved workout:', session.id);
+  } catch (error) {
+    console.error('[WorkoutSession] Failed to save workout:', error);
+    throw error;
+  }
 }
 
 export async function getWorkoutSessions(uid: string): Promise<WorkoutSession[]> {
   try {
     const q = query(workoutSessionsCollection(uid));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => doc.data() as WorkoutSession);
+    return snapshot.docs.map(sessionDoc => sessionDoc.data() as WorkoutSession);
   } catch (error) {
     console.error('Failed to fetch workout sessions:', error);
     return [];
@@ -93,7 +100,7 @@ export async function getCompletedWorkoutSessions(uid: string): Promise<WorkoutS
       where('status', '==', 'completed'),
     );
     const snapshot = await getDocs(q);
-    const sessions = snapshot.docs.map(doc => doc.data() as WorkoutSession);
+    const sessions = snapshot.docs.map(sessionDoc => sessionDoc.data() as WorkoutSession);
     // Sort by completedAt in descending order
     return sessions.sort((a, b) => {
       const dateA = new Date(a.completedAt || 0).getTime();
@@ -106,17 +113,58 @@ export async function getCompletedWorkoutSessions(uid: string): Promise<WorkoutS
   }
 }
 
+export async function saveWorkoutSessionProgress(uid: string, session: WorkoutSession): Promise<void> {
+  const sessionRef = workoutSessionReference(uid, session.id);
+  console.log('[WorkoutSession] Saving in-progress workout:', session.id, 'for user:', uid);
+  try {
+    await setDoc(sessionRef, {
+      ...session,
+      updatedAt: serverTimestamp(),
+      // Don't set completedAt for in-progress sessions
+    });
+    console.log('[WorkoutSession] Progress saved for workout:', session.id);
+  } catch (error) {
+    console.error('[WorkoutSession] Failed to save progress:', error);
+    throw error;
+  }
+}
+
+export async function getInProgressWorkoutSession(uid: string): Promise<WorkoutSession | null> {
+  try {
+    const q = query(workoutSessionsCollection(uid), where('status', '==', 'in_progress'));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    // Get the most recently updated in-progress session
+    const sessions = snapshot.docs.map(sessionDoc => sessionDoc.data() as WorkoutSession);
+    const latest = sessions.sort((a, b) => {
+      const dateA = new Date(a.updatedAt || 0).getTime();
+      const dateB = new Date(b.updatedAt || 0).getTime();
+      return dateB - dateA;
+    })[0];
+
+    console.log('[WorkoutSession] Found in-progress workout:', latest?.id);
+    return latest || null;
+  } catch (error) {
+    console.error('[WorkoutSession] Failed to fetch in-progress workout:', error);
+    return null;
+  }
+}
+
 export async function getWorkoutSession(uid: string, sessionId: string): Promise<WorkoutSession | null> {
   try {
     const sessionRef = workoutSessionReference(uid, sessionId);
-    const doc = await getDoc(sessionRef);
+    const sessionDocSnapshot = await getDoc(sessionRef);
 
-    if (!doc.exists()) {
+    if (!sessionDocSnapshot.exists()) {
       console.warn(`Workout session ${sessionId} not found`);
       return null;
     }
 
-    const session = doc.data() as WorkoutSession;
+    const session = sessionDocSnapshot.data() as WorkoutSession;
     if (session.status !== 'completed') {
       console.warn(`Workout session ${sessionId} is not completed (status: ${session.status})`);
       return null;

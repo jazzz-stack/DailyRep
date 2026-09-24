@@ -61,17 +61,22 @@ export function WorkoutCompleteScreen({navigation, route}: Props) {
   };
 
   const saveWorkout = async (workoutSession: WorkoutSession) => {
+    console.log('[WorkoutComplete] Attempting to save workout:', workoutSession.id);
     if (!user) {
+      console.error('[WorkoutComplete] Not authenticated, no user UID');
       setSaveError('Not authenticated');
       setIsSaving(false);
       setShowRetry(true);
       return;
     }
 
+    console.log('[WorkoutComplete] User authenticated:', user.uid);
     try {
       setIsSaving(true);
       setSaveError(null);
+      console.log('[WorkoutComplete] Calling saveCompletedWorkoutSession...');
       await saveCompletedWorkoutSession(user.uid, workoutSession);
+      console.log('[WorkoutComplete] Save successful!');
       setIsSaving(false);
 
       // Show completion notification
@@ -105,6 +110,7 @@ export function WorkoutCompleteScreen({navigation, route}: Props) {
         console.error('Failed to display completion notification:', notificationError);
       }
     } catch (error) {
+      console.error('[WorkoutComplete] Save failed:', error);
       const errorMessage = getWorkoutSessionErrorMessage(error, 'Failed to save your workout.');
       setSaveError(errorMessage);
       setIsSaving(false);
