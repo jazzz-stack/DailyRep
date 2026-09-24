@@ -14,6 +14,7 @@ export type Workout = {
   id: string;
   name: string;
   description: string;
+  dayNumber: number;
   estimatedDurationMinutes: number;
   exercises: WorkoutExercise[];
 };
@@ -25,7 +26,7 @@ export type WorkoutPlan = {
   goal: WorkoutGoal;
   level: WorkoutLevel;
   location: WorkoutLocation;
-  daysPerWeek: number;
+  daysPerWeek: 6;
   estimatedDurationMinutes: number;
   workouts: Workout[];
 };

@@ -17,7 +17,7 @@ export const WorkoutPlanCard = memo(function WorkoutPlanCardView({plan, recommen
         <Meta label="Location" value={labelize(plan.location)} />
         <Meta label="Frequency" value={`${plan.daysPerWeek} days/week`} />
       </View>
-      <Text style={styles.footer}>{plan.estimatedDurationMinutes} min  |  {plan.workouts.length} workouts</Text>
+      <Text style={styles.footer}>6 Days / Week  |  {plan.estimatedDurationMinutes} min  |  {plan.workouts.length} workouts</Text>
     </Pressable>
   );
 });
