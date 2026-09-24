@@ -16,10 +16,13 @@ import {WorkoutExecutionScreen} from '../screens/workouts/WorkoutExecutionScreen
 import {WorkoutCompleteScreen} from '../screens/workouts/WorkoutCompleteScreen';
 import {WorkoutPlanDetailsScreen} from '../screens/workouts/WorkoutPlanDetailsScreen';
 import {WorkoutPlansScreen} from '../screens/workouts/WorkoutPlansScreen';
-import {SectionPlaceholderScreen} from '../screens/main/SectionPlaceholderScreen';
+import {WorkoutHistoryScreen} from '../screens/workouts/WorkoutHistoryScreen';
+import {WorkoutHistoryDetailScreen} from '../screens/workouts/WorkoutHistoryDetailScreen';
 import {ProfileScreen} from '../screens/profile/ProfileScreen';
 import {EditProfileScreen} from '../screens/profile/EditProfileScreen';
 import {ProfileSetupScreen} from '../screens/profile/ProfileSetupScreen';
+import {ProgressScreen} from '../screens/progress/ProgressScreen';
+import {ExerciseProgressScreen} from '../screens/progress/ExerciseProgressScreen';
 import type {AuthStackParamList, ExerciseStackParamList, MainStackParamList, MainTabParamList, RootStackParamList} from '../types/navigation';
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
@@ -65,9 +68,7 @@ function MainTabNavigator() {
     >
       <MainTabs.Screen name="Home" component={HomeScreen} />
       <MainTabs.Screen name="Workouts" component={ExerciseNavigator} />
-      <MainTabs.Screen name="Progress">
-        {() => <SectionPlaceholderScreen title="Progress" description="Track strength, volume, streaks, and personal records here." />}
-      </MainTabs.Screen>
+      <MainTabs.Screen name="Progress" component={ProgressScreen} />
       <MainTabs.Screen name="Profile" component={ProfileScreen} />
     </MainTabs.Navigator>
   );
@@ -83,6 +84,9 @@ function ExerciseNavigator() {
       <ExerciseStack.Screen name="WorkoutComplete" component={WorkoutCompleteScreen} options={{title: 'Workout Complete'}} />
       <ExerciseStack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{title: 'Exercise Details'}} />
       <ExerciseStack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} options={{title: 'Exercise Library'}} />
+      <ExerciseStack.Screen name="WorkoutHistory" component={WorkoutHistoryScreen} options={{headerShown: false}} />
+      <ExerciseStack.Screen name="WorkoutHistoryDetail" component={WorkoutHistoryDetailScreen} options={{title: 'Workout Details'}} />
+      <ExerciseStack.Screen name="ExerciseProgress" component={ExerciseProgressScreen} options={{title: 'Exercise Progress'}} />
     </ExerciseStack.Navigator>
   );
 }

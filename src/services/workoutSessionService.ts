@@ -5,6 +5,7 @@ import {
   getDocs,
   getFirestore,
   query,
+  orderBy,
   serverTimestamp,
   setDoc,
   where,
@@ -83,5 +84,43 @@ export function getWorkoutSessionErrorMessage(error: unknown, fallback: string):
       return 'Firestore is temporarily unavailable. Check your connection and try again.';
     default:
       return fallback;
+  }
+}
+
+export async function getCompletedWorkoutSessions(uid: string): Promise<WorkoutSession[]> {
+  try {
+    const q = query(
+      workoutSessionsCollection(uid),
+      where('status', '==', 'completed'),
+      orderBy('completedAt', 'desc'),
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => doc.data() as WorkoutSession);
+  } catch (error) {
+    console.error('Failed to fetch completed workout sessions:', error);
+    return [];
+  }
+}
+
+export async function getWorkoutSession(uid: string, sessionId: string): Promise<WorkoutSession | null> {
+  try {
+    const sessionRef = workoutSessionReference(uid, sessionId);
+    const doc = await getDoc(sessionRef);
+
+    if (!doc.exists()) {
+      console.warn(`Workout session ${sessionId} not found`);
+      return null;
+    }
+
+    const session = doc.data() as WorkoutSession;
+    if (session.status !== 'completed') {
+      console.warn(`Workout session ${sessionId} is not completed (status: ${session.status})`);
+      return null;
+    }
+
+    return session;
+  } catch (error) {
+    console.error('Failed to fetch workout session:', error);
+    return null;
   }
 }
