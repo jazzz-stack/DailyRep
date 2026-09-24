@@ -2,7 +2,7 @@ import {NavigationContainer, type NavigationContainerRef} from '@react-navigatio
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
-import {useRef, useState, type ReactNode} from 'react';
+import {useRef, useState, useEffect, type ReactNode} from 'react';
 import {LoadingScreen} from '../components/LoadingScreen';
 import {useAuth} from '../context/AuthContext';
 import {ForgotPasswordScreen} from '../screens/auth/ForgotPasswordScreen';
@@ -67,6 +67,7 @@ function AuthNavigator() {
 function MainTabNavigator() {
   return (
     <MainTabs.Navigator
+      initialRouteName="Home"
       screenOptions={({route}) => ({
         headerShown: false,
         tabBarActiveTintColor: '#37734F',
@@ -102,10 +103,22 @@ function ExerciseNavigator() {
 function MainStackNavigator() {
   const {profile} = useAuth();
 
+  // Navigate to Tabs when profile becomes available
+  useEffect(() => {
+    if (profile && navigationRef.ref) {
+      navigationRef.ref.navigate('Main' as any, {screen: 'Tabs'} as any);
+    }
+  }, [profile]);
+
   return (
     // "First login" means no profile document exists yet; any existing record skips setup.
-    <MainStack.Navigator initialRouteName={profile ? 'Tabs' : 'ProfileSetup'} screenOptions={{headerShown: false}}>
+    // Use initialRouteName to control which screen shows based on profile state.
+    <MainStack.Navigator 
+      screenOptions={{headerShown: false}}
+      initialRouteName={profile ? 'Tabs' : 'ProfileSetup'}
+    >
       <MainStack.Screen name="Tabs" component={MainTabNavigator} />
+      <MainStack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
       <MainStack.Screen
         name="EditProfile"
         component={EditProfileScreen}
@@ -128,7 +141,6 @@ function MainStackNavigator() {
           headerShadowVisible: false,
         }}
       />
-      <MainStack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
     </MainStack.Navigator>
   );
 }

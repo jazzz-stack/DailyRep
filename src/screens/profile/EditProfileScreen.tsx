@@ -112,11 +112,16 @@ export function EditProfileScreen({navigation, route}: Props) {
           ...optionalUpdates,
         });
       }
+      // Wait for profile to be reloaded from Firestore before showing success
       await refreshProfile();
       setSuccess('Profile saved successfully.');
+      
+      // For ProfileSetup (first login), navigate to Home tab after success
+      // For EditProfile, navigate back
       setTimeout(() => {
         if (route.name === 'ProfileSetup') {
-          navigation.replace('Tabs', undefined);
+          // Navigate to Home tab after completing profile setup
+          navigation.navigate('Tabs', {screen: 'Home'} as any);
         } else {
           navigation.goBack();
         }
