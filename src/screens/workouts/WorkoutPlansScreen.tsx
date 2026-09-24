@@ -84,7 +84,7 @@ export function WorkoutPlansScreen({ navigation }: Props) {
             <Text style={styles.eyebrow}>DAILYREP</Text>
             <Text style={styles.title}>Workout Plans</Text>
             <Text style={styles.subtitle}>
-              Choose a plan that matches your goal
+              Train 6 days and recover on Day 7 with a structured plan.
             </Text>
             <Pressable
               accessibilityRole="button"

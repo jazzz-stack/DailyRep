@@ -33,10 +33,17 @@ test('renders plan and workout details, including missing IDs gracefully', async
   let workoutRenderer: ReturnType<typeof ReactTestRenderer.create> | undefined;
   await ReactTestRenderer.act(async () => {
     planRenderer = ReactTestRenderer.create(<WorkoutPlanDetailsScreen navigation={planNavigation} route={{key: 'plan', name: 'WorkoutPlanDetails', params: {planId: 'beginner-full-body'}}} />);
-    workoutRenderer = ReactTestRenderer.create(<WorkoutDetailsScreen navigation={workoutNavigation} route={{key: 'workout', name: 'WorkoutDetails', params: {planId: 'beginner-full-body', workoutId: 'beginner-full-body-a'}}} />);
+    workoutRenderer = ReactTestRenderer.create(<WorkoutDetailsScreen navigation={workoutNavigation} route={{key: 'workout', name: 'WorkoutDetails', params: {planId: 'beginner-full-body', workoutId: 'beginner-full-body-a-1'}}} />);
   });
   expect(planRenderer?.root.findAllByType(Text).some(node => node.props.children === 'Beginner Full Body')).toBe(true);
+  expect(planRenderer?.root.findAllByType(Text).some(node => node.props.children === 'Rest & Recovery')).toBe(true);
   expect(workoutRenderer?.root.findAllByType(Text).some(node => node.props.children === 'Full Body A')).toBe(true);
+  const dayOne = planRenderer?.root.find(node => node.props.accessibilityLabel === 'Open Day 1, Full Body A');
+  await ReactTestRenderer.act(async () => { dayOne?.props.onPress(); });
+  expect(navigation.navigate).toHaveBeenCalledWith('WorkoutDetails', {planId: 'beginner-full-body', workoutId: 'beginner-full-body-a-1'});
+  const exercise = workoutRenderer?.root.find(node => node.props.accessibilityLabel === 'Open Bodyweight Squat');
+  await ReactTestRenderer.act(async () => { exercise?.props.onPress(); });
+  expect(navigation.navigate).toHaveBeenCalledWith('ExerciseDetails', {exerciseId: 'bodyweight-squat'});
   let missing: ReturnType<typeof ReactTestRenderer.create> | undefined;
   await ReactTestRenderer.act(async () => {
     missing = ReactTestRenderer.create(<WorkoutPlanDetailsScreen navigation={planNavigation} route={{key: 'missing', name: 'WorkoutPlanDetails', params: {planId: 'missing'}}} />);

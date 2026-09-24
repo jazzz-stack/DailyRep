@@ -17,6 +17,8 @@ export type ExerciseStackParamList = {
   WorkoutPlans: undefined;
   WorkoutPlanDetails: {planId: string};
   WorkoutDetails: {planId: string; workoutId: string};
+  WorkoutExecution: {planId: string; workoutId: string};
+  WorkoutComplete: {sessionId: string};
   ExerciseDetails: {exerciseId: string};
   ExerciseLibrary: undefined;
 };

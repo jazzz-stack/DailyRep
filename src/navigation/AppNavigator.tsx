@@ -12,6 +12,8 @@ import {HomeScreen} from '../screens/home/HomeScreen';
 import {ExerciseDetailsScreen} from '../screens/exercises/ExerciseDetailsScreen';
 import {ExerciseLibraryScreen} from '../screens/exercises/ExerciseLibraryScreen';
 import {WorkoutDetailsScreen} from '../screens/workouts/WorkoutDetailsScreen';
+import {WorkoutExecutionScreen} from '../screens/workouts/WorkoutExecutionScreen';
+import {WorkoutCompleteScreen} from '../screens/workouts/WorkoutCompleteScreen';
 import {WorkoutPlanDetailsScreen} from '../screens/workouts/WorkoutPlanDetailsScreen';
 import {WorkoutPlansScreen} from '../screens/workouts/WorkoutPlansScreen';
 import {SectionPlaceholderScreen} from '../screens/main/SectionPlaceholderScreen';
@@ -77,6 +79,8 @@ function ExerciseNavigator() {
       <ExerciseStack.Screen name="WorkoutPlans" component={WorkoutPlansScreen} options={{headerShown: false}} />
       <ExerciseStack.Screen name="WorkoutPlanDetails" component={WorkoutPlanDetailsScreen} options={{title: 'Workout Plan'}} />
       <ExerciseStack.Screen name="WorkoutDetails" component={WorkoutDetailsScreen} options={{title: 'Workout Details'}} />
+      <ExerciseStack.Screen name="WorkoutExecution" component={WorkoutExecutionScreen} options={{title: 'Workout'}} />
+      <ExerciseStack.Screen name="WorkoutComplete" component={WorkoutCompleteScreen} options={{title: 'Workout Complete'}} />
       <ExerciseStack.Screen name="ExerciseDetails" component={ExerciseDetailsScreen} options={{title: 'Exercise Details'}} />
       <ExerciseStack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} options={{title: 'Exercise Library'}} />
     </ExerciseStack.Navigator>

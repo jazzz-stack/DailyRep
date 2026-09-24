@@ -7,6 +7,14 @@ export type WorkoutPlanFilters = {
   location?: WorkoutPlan['location'];
 };
 
+function isDurationCompatible(plan: WorkoutPlan, duration: UserProfile['workoutDuration']): boolean {
+  if (!duration) return false;
+  if (duration === '15_30') return plan.estimatedDurationMinutes <= 30;
+  if (duration === '30_45') return plan.estimatedDurationMinutes >= 30 && plan.estimatedDurationMinutes <= 45;
+  if (duration === '45_60') return plan.estimatedDurationMinutes >= 45 && plan.estimatedDurationMinutes <= 60;
+  return plan.estimatedDurationMinutes >= 60;
+}
+
 export function filterWorkoutPlans(plans: WorkoutPlan[], filters: WorkoutPlanFilters): WorkoutPlan[] {
   return plans.filter(plan =>
     (!filters.goal || plan.goal === filters.goal) &&
@@ -22,15 +30,17 @@ export function getWorkoutPlanMatchScore(plan: WorkoutPlan, profile: UserProfile
     profile.fitnessGoal && plan.goal === profile.fitnessGoal,
     profile.fitnessLevel && plan.level === profile.fitnessLevel,
     profile.workoutPreference && plan.location === profile.workoutPreference,
-    profile.workoutFrequency && plan.daysPerWeek === profile.workoutFrequency,
+    profile.workoutDuration && isDurationCompatible(plan, profile.workoutDuration),
+    profile.workoutFrequency === 6 && plan.daysPerWeek === 6,
   ].filter(Boolean).length;
 }
 
 export function isWorkoutPlanMatch(plan: WorkoutPlan, profile: UserProfile | null): boolean {
   if (!profile) return false;
 
-  const profileCriteria = [profile.fitnessGoal, profile.fitnessLevel, profile.workoutPreference, profile.workoutFrequency].filter(value => value !== undefined).length;
-  return profileCriteria > 0 && getWorkoutPlanMatchScore(plan, profile) === profileCriteria;
+  const criteria = [profile.fitnessGoal, profile.fitnessLevel, profile.workoutPreference, profile.workoutDuration].filter(value => value !== undefined).length;
+  const matchingCriteria = getWorkoutPlanMatchScore(plan, profile);
+  return criteria > 0 && matchingCriteria >= Math.min(3, criteria);
 }
 
 export function getInvalidWorkoutExerciseIds(plans: WorkoutPlan[], exerciseIds: Set<string>): string[] {
